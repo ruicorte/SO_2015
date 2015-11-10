@@ -62,8 +62,9 @@ void *recebe_comandos_monitor(void *arg){
 			corre=0;
 			exit(1);
 		} else {	
-			if(!strcmp(buffer, "inicio\n"))
+			if(!strcmp(buffer, "inicio\n")){
 				corre = 1;
+			}
 			if(!strcmp(buffer, "cliente\n")){
 				pthread_t thread;
 				pthread_create(&thread, NULL, &tarefa_cliente, &sockfd);
