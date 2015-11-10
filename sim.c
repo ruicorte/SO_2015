@@ -19,9 +19,8 @@
 #include "unix.h"
 #include "util.h"
 
-/************************************************************************************************************
-*	variaveis globais
-************************************************************************************************************/
+// variaveis globais
+*
 int num_cliente;
 time_t start;
 struct sockaddr_un serv_addr;
@@ -32,18 +31,11 @@ int TEMPO_SIMULACAO, TEMPO_MEDIO_CRIACAO_CARROS;
 
 int corre=0, pausa=0, controlo_pausa;
 
-/************************************************************************************************************
-*	funcao: tarefa_cliente
-*	argumentos: ponteiro do tipo void
-*	devolve: ponteiro do tipo void
-*	descricao: thread cliente
-************************************************************************************************************/
+// tarefa cliente
 void *tarefa_cliente(void *ptr){
 	int id = num_cliente++;
 	char buffer_c[256];
-
-	int i;
-			
+	int i;			
 	printf("O cliente %d chegou a discoteca.\n", id);
 	sprintf(buffer_c, "CLIENTE %d\n", id);
 	send(sockfd,buffer_c,sizeof(buffer_c),0);
@@ -51,7 +43,7 @@ void *tarefa_cliente(void *ptr){
 	return NULL;
 }
 
-// Funcao que trata dos pedidos vindos do Monitor 
+// tratamento dos pedidos do monitor
 void *recebe_comandos_monitor(void *arg){
 	struct sockaddr_un cli_addr;
 	int done, n, id;

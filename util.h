@@ -3,8 +3,6 @@
 #include <unistd.h>
 #include <time.h>
 
-//#define MAXLINE 512
-
 int *leitura_configuracao(char *file)
 {
 	int *a = (int *)malloc(sizeof(int) * 10);
