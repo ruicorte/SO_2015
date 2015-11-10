@@ -20,24 +20,20 @@
 #include "util.h"
 
 // variaveis globais
-*
 int num_cliente;
 time_t start;
 struct sockaddr_un serv_addr;
 int sockfd, servlen;
 
-//variaveis com informacao da configuracao
-int TEMPO_SIMULACAO, TEMPO_MEDIO_CRIACAO_CARROS;
-
-int corre=0, pausa=0, controlo_pausa;
+int corre=0;
 
 // tarefa cliente
 void *tarefa_cliente(void *ptr){
 	int id = num_cliente++;
 	char buffer_c[256];
 	int i;			
-	printf("O cliente %d chegou a discoteca.\n", id);
-	sprintf(buffer_c, "CLIENTE %d\n", id);
+	printf("Sou o cliente %d e cheguei a discoteca.\n", id);
+	sprintf(buffer_c, "CHEGADA CLIENTE %d\n", id);
 	send(sockfd,buffer_c,sizeof(buffer_c),0);
 
 	return NULL;
@@ -68,9 +64,9 @@ void *recebe_comandos_monitor(void *arg){
 		} else {	
 			if(!strcmp(buffer, "inicio\n"))
 				corre = 1;
-			if(!strcmp(buffer, "carro\n")){
+			if(!strcmp(buffer, "cliente\n")){
 				pthread_t thread;
-				pthread_create(&thread, NULL, &tarefa_carro, &sockfd);
+				pthread_create(&thread, NULL, &tarefa_cliente, &sockfd);
 			}
 		}
 	}
@@ -84,7 +80,7 @@ int main(int argc, char *argv[]){
 	} else {
 		// interpretacao do ficheiro de configuraçao
 		int *conf = leitura_configuracao(argv[1]);
-		num_carro = conf[0];
+		num_cliente = conf[0];
 		
 		// socket
 		if((sockfd=socket(AF_UNIX, SOCK_STREAM, 0)) < 0)

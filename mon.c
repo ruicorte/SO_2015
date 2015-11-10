@@ -19,7 +19,7 @@
 FILE *relatorio;
 
 // variaveis globais
-int corre=0, pausa=0;
+int corre=0;
 
 // escuta das mensagens do simulador
 void *escuta_comunicacao(void *arg)
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
 
 	int clilen = sizeof(cli_addr);
 	char buffer[256];
-	char menu[512] = "----------------------------------\n| comandos disponiveis no monitor|\n----------------------------------\n| inicio - Comecar simulacao     |\n| carro - cria carro             |\n| menu - mostra opçoes           |\n| fim - Sair da aplicação        |\n----------------------------------\n";
+	char menu[512] = "----------------------------------\n| comandos disponiveis no monitor|\n----------------------------------\n| inicio - Comecar simulacao     |\n| cliente - cria cliente         |\n| menu - mostra opçoes           |\n| fim - Sair da aplicação        |\n----------------------------------\n";
 
 	// socket UNIX
 	if((sockfd=socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
@@ -93,7 +93,6 @@ int main(int argc, char *argv[]){
 	while(strcmp (buffer, "fim\n"));
 	
 	corre = 0;
-	pausa = 0;
 
 	printf("\nsimulacao terminada\n\n");
 	fclose(relatorio);
