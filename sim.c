@@ -21,13 +21,9 @@
 
 /************************************************************************************************************
 *	variaveis globais
-*	descricao: podem ser acedidas em qualquer momento e local durante a execucao do simulador
 ************************************************************************************************************/
-
-int num_carro;
-
+int num_cliente;
 time_t start;
-
 struct sockaddr_un serv_addr;
 int sockfd, servlen;
 
@@ -37,28 +33,26 @@ int TEMPO_SIMULACAO, TEMPO_MEDIO_CRIACAO_CARROS;
 int corre=0, pausa=0, controlo_pausa;
 
 /************************************************************************************************************
-*	funcao: tarefa_carro
+*	funcao: tarefa_cliente
 *	argumentos: ponteiro do tipo void
 *	devolve: ponteiro do tipo void
-*	descricao: comportamento de uma thread que representa um carro
+*	descricao: thread cliente
 ************************************************************************************************************/
-void *tarefa_carro(void *ptr)
-{
-	int id = num_carro++;
+void *tarefa_cliente(void *ptr){
+	int id = num_cliente++;
 	char buffer_c[256];
 
 	int i;
 			
-	printf("O carro %d foi criado.\n", id);
-	sprintf(buffer_c, "CARRO %d\n", id);
+	printf("O cliente %d chegou a discoteca.\n", id);
+	sprintf(buffer_c, "CLIENTE %d\n", id);
 	send(sockfd,buffer_c,sizeof(buffer_c),0);
 
 	return NULL;
 }
 
 // Funcao que trata dos pedidos vindos do Monitor 
-void *recebe_comandos_monitor(void *arg)
-{
+void *recebe_comandos_monitor(void *arg){
 	struct sockaddr_un cli_addr;
 	int done, n, id;
 
@@ -66,29 +60,23 @@ void *recebe_comandos_monitor(void *arg)
 
 	char buffer[256];
 	
-	// Ciclo que fica a espera dos pedidos do monitor, para lhes dar resposta
-	while(1)
-	{
+	// espera pelos pedidos do monitor
+	while(1){
 		done=0;	
-		if((n=recv(sockfd, buffer, sizeof(buffer), 0)) <= 0)
-		{
+		if((n=recv(sockfd, buffer, sizeof(buffer), 0)) <= 0){
 			if(n < 0) 
 				perror("recv error");
 			done=1;
 		}
 		buffer[n]='\0';
 
-		if(!strcmp(buffer, "fim\n"))
-		{
+		if(!strcmp(buffer, "fim\n")){
 			corre=0;
 			exit(1);
-		}
-		else
-		{	
+		} else {	
 			if(!strcmp(buffer, "inicio\n"))
 				corre = 1;
-			if(!strcmp(buffer, "carro\n"))
-			{
+			if(!strcmp(buffer, "carro\n")){
 				pthread_t thread;
 				pthread_create(&thread, NULL, &tarefa_carro, &sockfd);
 			}
@@ -97,30 +85,25 @@ void *recebe_comandos_monitor(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
-{
-	
-	if(argc<2)
-	{
-		printf("Ficheiro de configuração em falta. Não é possível continuar.");
+int main(int argc, char *argv[]){
+	if(argc<2){
+		printf("falta ficheiro de configuracao");
 		return 1;
-	}
-	else
-	{
-		//interpretacao do ficheiro de configuraçao
+	} else {
+		// interpretacao do ficheiro de configuraçao
 		int *conf = leitura_configuracao(argv[1]);
 		num_carro = conf[0];
 		
-		//criacao do socket e ligação
+		// socket
 		if((sockfd=socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-			perror("Simulador: cant open socket stream");
+			perror("simulador: erro na abertura do socket");
 		serv_addr.sun_family=AF_UNIX;
 		strcpy(serv_addr.sun_path, UNIXSTR_PATH);
 		servlen=strlen(serv_addr.sun_path)+sizeof(serv_addr.sun_family);
 		if(connect(sockfd, (struct sockaddr *) &serv_addr, servlen) < 0)
-			perror("connect error");
+			perror("erro de ligacao");
 
-		//Criacao da tarefa que ira tratar dos pedidos enviados pelo Monitor
+		// tarefa que trata dos pedidos enviados pelo monitor
 		pthread_t thread;
 		pthread_create(&thread, NULL, &recebe_comandos_monitor, &sockfd);
 		
@@ -133,7 +116,7 @@ int main(int argc, char *argv[])
 
 		while(corre);
 		
-		printf("\nSimulação terminada.\n");
+		printf("\nfim da simulacao.\n");
 		sprintf(buffer,"FIM \n");
 		send(sockfd,buffer,sizeof(buffer),0);
 		

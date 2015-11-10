@@ -15,29 +15,25 @@
 #include "unix.h"
 #include "util.h"
 
-//apontador para o ficheiro onde será escrito o relatório da simulação
+// ficheiro para relatorio
 FILE *relatorio;
 
-//variáveis globais para controlo de execução
+// variaveis globais
 int corre=0, pausa=0;
 
-//função que fica à escuta das mensagens do simulador
+// escuta das mensagens do simulador
 void *escuta_comunicacao(void *arg)
 {
 	int sockfd=*((int *) arg);
 	int msg, num_comandos, id, com;
 	char buffer[256],comando[20];
 
-	//ciclo que fica à espera de mensagens do simulador
-	while(1)
-	{
-		if((msg=recv(sockfd, buffer, sizeof(buffer), 0)) <= 0)
-		{
+	// ciclo que espera mensagens do simulador
+	while(1){
+		if((msg=recv(sockfd, buffer, sizeof(buffer), 0)) <= 0){
 			if(msg < 0)
 				perror("recv");
-		}
-		else
-		{
+		} else {
            		buffer[msg]='\0';
 			fprintf(relatorio,"%s", buffer);
 		}
@@ -46,9 +42,8 @@ void *escuta_comunicacao(void *arg)
 }
 
 
-//função principal do monitor
-int main(int argc, char *argv[])
-{	
+// funcao principal
+int main(int argc, char *argv[]){	
 	struct sockaddr_un serv_addr, cli_addr;
 	int sockfd, servlen, newsockfd;
 
@@ -56,7 +51,7 @@ int main(int argc, char *argv[])
 	char buffer[256];
 	char menu[512] = "----------------------------------\n| comandos disponiveis no monitor|\n----------------------------------\n| inicio - Comecar simulacao     |\n| carro - cria carro             |\n| menu - mostra opçoes           |\n| fim - Sair da aplicação        |\n----------------------------------\n";
 
-	//Criacao do socket UNIX
+	// socket UNIX
 	if((sockfd=socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 		perror("cant open socket stream");
 	serv_addr.sun_family=AF_UNIX;
@@ -70,32 +65,28 @@ int main(int argc, char *argv[])
 	if((newsockfd=accept(sockfd, (struct sockaddr *) &cli_addr, &clilen)) < 0)
 		perror("accept error");
 
-	// criacao da tarefa que ira tratar da comunicação com o simulador
+	// tarefa que trata da comunicação com o simulador
 	pthread_t thread;
 	pthread_create(&thread, NULL, &escuta_comunicacao, &newsockfd);
 
-	// escrita do menu
+	// menu
 	printf("%s",menu);
 
-	unlink("relatorio.log"); // apaga  ficheiro	
+	unlink("relatorio.log"); // apaga ficheiro	
 	relatorio=fopen("relatorio.log", "a"); // abre o ficheiro
 
-	do
-	{
+	do{
 		fgets(buffer, sizeof(buffer), stdin);
 
-		if(send(newsockfd, buffer, sizeof(buffer), 0) == -1)
-		{
+		if(send(newsockfd, buffer, sizeof(buffer), 0) == -1){
 			perror("send");
 			exit(1);
 		}
 
-		if(!strcmp (buffer, "inicio\n"))
-		{
+		if(!strcmp (buffer, "inicio\n")){
 			corre=1;
 		}
-		if(!strcmp (buffer, "menu\n"))
-		{
+		if(!strcmp (buffer, "menu\n")){
 			printf("%s",menu);
 		}
 	}
@@ -104,10 +95,9 @@ int main(int argc, char *argv[])
 	corre = 0;
 	pausa = 0;
 
-	printf("\nExecução do simulador terminou.\n\n");
+	printf("\nsimulacao terminada\n\n");
 	fclose(relatorio);
 	close(sockfd);
 
 	return 0;
 }
-

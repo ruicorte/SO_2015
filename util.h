@@ -11,7 +11,7 @@ int *leitura_configuracao(char *file)
 	FILE *fp = fopen (file, "r");
 	if(fp == NULL )
 	{
-		printf("Nao e possivel abrir o ficheiro de configuracao.\n");
+		printf("erro na abertura do ficheiro de configuracao.\n");
 		abort();
 	}
 	int num, i=0;
@@ -24,4 +24,3 @@ int *leitura_configuracao(char *file)
 	fclose(fp);
 	return a;
 }
-
