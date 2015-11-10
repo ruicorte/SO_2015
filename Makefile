@@ -1,12 +1,24 @@
-all: simulador monitor monitor: monitor.o
-	gcc -Wall -g monitor.o -o monitor -lpthread
-monitor.o: monitor.c simulador.h
-	gcc -c monitor.c
-simulador: simulador.o
-	gcc -Wall -g simulador.o -o simulador -lpthread
-simulador.o: simulador.c simulador.h
-	gcc -c simulador.c
+#####################################################################################################
+# sistemas operativos - 2015/2016 - simulacao de discoteca
+#
+# Docente: Eduardo Marques
+#
+# Alunos:
+# David Ricardo Cândido nº 2032703
+# Luís Bouzas Prego 	nº 2081815
+#
+# Ficheiro: Makefile
+#####################################################################################################
+
+all: sim mon
+
+mon: mon.o
+	gcc -Wall -g mon.o -o mon -lpthread
+mon.o: mon.c util.h unix.h
+	gcc -c mon.c
+sim: sim.o
+	gcc -Wall -g sim.o -o sim -lpthread
+sim.o: sim.c util.h unix.h
+	gcc -c sim.c
 clean:
 	rm *.o
-	rm simulador
-	rm monitor
