@@ -105,9 +105,9 @@ int main(int argc, char *argv[]){
 
 		while(corre);
 		
-		printf("\nfim da simulacao.\n");
 		sprintf(buffer,"FIM \n");
 		send(sockfd,buffer,sizeof(buffer),0);
+		printf("\nfim da simulacao.\n");
 		
 		close(sockfd);
 	}
