@@ -3,22 +3,23 @@
 #include <unistd.h>
 #include <time.h>
 
-int *leitura_configuracao(char *file)
+int *configuracao(char *file)
 {
-	int *a = (int *)malloc(sizeof(int) * 10);
+	int *a = (int *)malloc(sizeof(int) * 20);
 	FILE *fp = fopen (file, "r");
 	if(fp == NULL )
 	{
-		printf("erro na abertura do ficheiro de configuracao.\n");
+		printf("erro: abertura do ficheiro de configuracao\n");
 		abort();
 	}
-	int num, i=0;
+	int num, i=1;
 	char name[100], buff[500];
 	while (fgets( buff, sizeof buff, fp) != NULL) 
 	{
 		if(sscanf(buff, "%[^=]=%d", name, &num) == 2)
 			a[i++]=num;
 	}
+	a[0] = i;
 	fclose(fp);
 	return a;
 }
