@@ -46,8 +46,7 @@ void *escuta_comunicacao(void *arg)
 		} else {
            	buffer[msg]='\0';
 			fprintf(relatorio,"%s", buffer);
-			printf("\n%s\n", buffer);
-
+//			printf("\n%s\n", buffer);
 			num_comandos = sscanf(buffer, "%d %s %d", &tempo, accao, &id);
 			if(num_comandos>0){
 				if(!strcmp(accao,"FIM")){
@@ -96,7 +95,7 @@ int main(int argc, char *argv[]){
 	printf("%s",menu);
 
 	unlink("relatorio.log"); 					// apaga ficheiro	
-	relatorio = fopen("relatorio.log", "a"); 	// abre o ficheiro
+	relatorio = fopen("relatorio.log", "a"); 	// abre o ficheiro para escrita
 
 	do{
 		fgets(buffer, sizeof(buffer), stdin);
