@@ -82,7 +82,7 @@ void *cliente(void *ptr){
 		vip = 1;
 	for(c=0; c<total_zonas; c++){							// geracao aleatoria do tempo que o cliente permanece em cada uma das zonas 
 		if(vip==1 || zonas[c].vip==0)
-			zonas_cliente[c] = rand()%tempo_maximo_zona;
+			zonas_cliente[c] = rand() % tempo_maximo_zona;
 		else
 			zonas_cliente[c] = 0;
 	}
@@ -97,7 +97,6 @@ void *cliente(void *ptr){
 			clientes_dentro++;
 
 			pthread_mutex_lock(&mutex);
-
 			printf("%d: cliente %d entrou na DISCOTECA.\n", tempo_actual, id);
 			sprintf(buffer, "%d CLIENTE %d ENTRA DISCOTECA\n", tempo_actual, id);
 			send(sockfd,buffer,sizeof(buffer),0);
